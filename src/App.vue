@@ -1,47 +1,75 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <h1>Captured resolution: {{ screenWidth }} x {{ screenHeight }}</h1>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <div>
+    <input type="file" accept="image/*" @change="onFileChange">
+    <canvas ref="canvas" @click="downloadCanvas"></canvas>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script>
+export default {
+  data() {
+    return {
+      icon: new Image(),
+      screenWidth: window.screen.width * window.devicePixelRatio,
+      screenHeight: window.screen.height * window.devicePixelRatio
+    }
+  },
+  computed: {
+    canvas() {
+      return this.$refs.canvas
+    },
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+    ctx() {
+      return this.canvas.getContext('2d')
+    }
+  },
+  methods: {
+    onFileChange(event) {
+      const file = event.target.files[0]
+      const imageUrl = URL.createObjectURL(file)
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+      this.icon.src = imageUrl
+      this.icon.alt = file.name
+      this.icon.onload = this.drawImage
+    },
+
+    drawImage() {
+      const iconWidth = this.icon.naturalWidth
+      const iconHeight = this.icon.naturalHeight
+
+      this.canvas.width = this.screenWidth
+      this.canvas.height = this.screenHeight
+
+      const x = (this.canvas.width - iconWidth) / 2
+      const y = (this.canvas.height - iconHeight) / 2
+
+      const offscreenCanvas = document.createElement("canvas")
+      offscreenCanvas.width = this.canvas.width
+      offscreenCanvas.height = this.canvas.height
+      const offscreenCtx = offscreenCanvas.getContext("2d")
+
+      offscreenCtx.drawImage(this.icon, x, y)
+
+      const borderData = offscreenCtx.getImageData(x, y, 1, 1)
+      const [borderR, borderG, borderB, borderA] = borderData.data
+
+      this.ctx.fillStyle = `rgba(${borderR}, ${borderG}, ${borderB}, ${borderA})`
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+      this.ctx.drawImage(offscreenCanvas, 0, 0)
+    },
+
+    downloadCanvas() {
+      if (!this.icon.src) return
+
+      const originalFileName = this.icon.alt.split('.')[0]
+      const link = document.createElement('a')
+
+      link.download = `${originalFileName}_${this.screenWidth}x${this.screenHeight}.png`
+      link.href = this.canvas.toDataURL()
+      link.click()
+    }
   }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
 }
-</style>
+</script>
