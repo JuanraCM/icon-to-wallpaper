@@ -5,64 +5,55 @@
   <canvas ref="canvas"></canvas>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue'
 import ImageLoad from './ImageLoad.vue'
 import CanvasDownload from './CanvasDownload.vue'
 
-export default {
-  components: {
-    ImageLoad,
-    CanvasDownload
-  },
-  data() {
-    return {
-      image: null,
-      canvas: null,
-      ctx: null,
-      screenWidth: window.screen.width * window.devicePixelRatio,
-      screenHeight: window.screen.height * window.devicePixelRatio
-    }
-  },
-  mounted() {
-    this.canvas = this.$refs.canvas
-    this.ctx = this.canvas.getContext('2d')
-  },
-  methods: {
-    drawCanvas() {
-      const imageWidth = this.image.naturalWidth
-      const imageHeight = this.image.naturalHeight
+const screenWidth = window.screen.width * window.devicePixelRatio
+const screenHeight = window.screen.height * window.devicePixelRatio
+const canvas = ref(null)
 
-      this.canvas.width = this.screenWidth
-      this.canvas.height = this.screenHeight
+let icon = null
+let ctx = null
 
-      const x = (this.canvas.width - imageWidth) / 2
-      const y = (this.canvas.height - imageHeight) / 2
+onMounted(() => {
+  ctx = canvas.value.getContext('2d')
+})
 
-      const offscreenCanvas = document.createElement("canvas")
-      offscreenCanvas.width = this.canvas.width
-      offscreenCanvas.height = this.canvas.height
-      const offscreenCtx = offscreenCanvas.getContext("2d")
+const drawImage = () => {
+  const iconWidth = icon.naturalWidth
+  const iconHeight = icon.naturalHeight
 
-      offscreenCtx.drawImage(this.image, x, y)
+  canvas.value.width = screenWidth
+  canvas.value.height = screenHeight
 
-      const borderData = offscreenCtx.getImageData(x, y, 1, 1)
-      const [borderR, borderG, borderB, borderA] = borderData.data
+  const x = (canvas.value.width - iconWidth) / 2
+  const y = (canvas.value.height - iconHeight) / 2
 
-      this.ctx.fillStyle = `rgba(${borderR}, ${borderG}, ${borderB}, ${borderA})`
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
-      this.ctx.drawImage(offscreenCanvas, 0, 0)
-    },
+  const offscreenCanvas = document.createElement("canvas")
+  const offscreenCtx = offscreenCanvas.getContext("2d")
 
-    setImage(imageFile) {
-      const image = new Image()
-      const imageUrl = URL.createObjectURL(imageFile)
+  offscreenCanvas.width = canvas.value.width
+  offscreenCanvas.height = canvas.value.height
+  offscreenCtx.drawImage(icon, x, y)
 
-      image.src = imageUrl
-      image.alt = imageFile.name
-      image.onload = this.drawCanvas
+  const borderData = offscreenCtx.getImageData(x, y, 1, 1)
+  const [borderR, borderG, borderB, borderA] = borderData.data
 
-      this.image = image
-    }
-  }
+  ctx.fillStyle = `rgba(${borderR}, ${borderG}, ${borderB}, ${borderA})`
+  ctx.fillRect(0, 0, canvas.value.width, canvas.value.height)
+  ctx.drawImage(offscreenCanvas, 0, 0)
+}
+
+const setImage = (imageFile) => {
+  const image = new Image()
+  const imageUrl = URL.createObjectURL(imageFile)
+
+  image.src = imageUrl
+  image.alt = imageFile.name
+  image.onload = drawImage
+
+  icon = image
 }
 </script>
