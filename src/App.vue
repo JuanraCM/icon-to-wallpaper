@@ -1,11 +1,13 @@
 <template>
-  <header>
-    There goes a header!
-  </header>
+  <div class="container">
+    <header>
+      There goes a header!
+    </header>
 
-  <main>
-    <ImageCanvas />
-  </main>
+    <main>
+      <ImageCanvas />
+    </main>
+  </div>
 </template>
 
 <script setup>
