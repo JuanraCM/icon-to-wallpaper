@@ -8,12 +8,6 @@
   </main>
 </template>
 
-<script>
+<script setup>
 import ImageCanvas from './components/ImageCanvas.vue'
-
-export default {
-  components: {
-    ImageCanvas
-  }
-}
 </script>

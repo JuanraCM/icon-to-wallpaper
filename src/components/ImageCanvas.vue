@@ -1,8 +1,8 @@
 <template>
+  <canvas ref="canvas"></canvas>
+
   <ImageLoad @image-loaded="setImage" />
   <CanvasDownload :canvas="canvas" />
-
-  <canvas ref="canvas"></canvas>
 </template>
 
 <script setup>
