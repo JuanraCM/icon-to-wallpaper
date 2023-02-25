@@ -1,9 +1,23 @@
 <template>
-  <input type="file" accept="image/*" @change="onFileChange" />
+  <Button @click="loadImage">
+    Load image
+  </Button>
 </template>
 
 <script setup>
+import Button from './Button.vue'
+
 const emit = defineEmits(['image-loaded'])
+
+const loadImage = () => {
+  const input = document.createElement('input')
+
+  input.type = 'file'
+  input.accept = 'image/*'
+  input.onchange = onFileChange
+
+  input.click()
+}
 
 const onFileChange = (event) => {
   const file = event.target.files[0]

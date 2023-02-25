@@ -1,8 +1,12 @@
 <template>
-  <button @click="downloadCanvas">Download</button>
+  <Button @click="downloadCanvas">
+    Download
+  </Button>
 </template>
 
 <script setup>
+import Button from './Button.vue'
+
 const props = defineProps(['canvas'])
 
 const downloadCanvas = () => {
