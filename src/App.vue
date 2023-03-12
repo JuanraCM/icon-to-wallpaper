@@ -3,7 +3,7 @@
     <AppHeader />
 
     <main>
-      <ImageCanvas />
+      <IconToWallpaper />
     </main>
 
     <AppFooter />
@@ -12,6 +12,6 @@
 
 <script setup>
 import AppHeader from './components/AppHeader.vue'
-import ImageCanvas from './components/ImageCanvas.vue'
+import IconToWallpaper from './components/IconToWallpaper.vue'
 import AppFooter from './components/AppFooter.vue'
 </script>

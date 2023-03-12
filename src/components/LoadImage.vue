@@ -14,12 +14,12 @@ const loadImage = () => {
 
   input.type = 'file'
   input.accept = 'image/*'
-  input.onchange = onFileChange
+  input.onchange = _onFileChange
 
   input.click()
 }
 
-const onFileChange = (event) => {
+const _onFileChange = (event) => {
   const file = event.target.files[0]
   if (file) emit('image-loaded', file)
 }
