@@ -20,16 +20,6 @@ const screen = {
 
 const wallpaper = ref('')
 
-let wpCanvas = null
-let wpCtx = null
-let auxCanvas = null
-let auxCtx = null
-
-onMounted(() => {
-  [wpCanvas, wpCtx] = _buildCanvas()
-  auxCanvas = _buildCanvas()[0]
-})
-
 const setImage = (imageFile) => {
   const image = new Image()
   const imageUrl = URL.createObjectURL(imageFile)
@@ -40,6 +30,9 @@ const setImage = (imageFile) => {
 }
 
 const _drawImage = ({ target: image }) => {
+  const [wpCanvas, wpCtx] = _buildCanvas()
+  const [auxCanvas, auxCtx] = _buildCanvas()
+
   const x = (wpCanvas.width - image.naturalWidth) / 2
   const y = (wpCanvas.height - image.naturalHeight) / 2
 
